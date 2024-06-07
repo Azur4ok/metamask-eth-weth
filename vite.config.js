@@ -7,5 +7,10 @@ export default defineConfig({
   base: "/metamask-eth-weth/",
   build: {
     outDir: "dist",
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name].[ext]",
+      },
+    },
   },
 })

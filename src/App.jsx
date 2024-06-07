@@ -7,11 +7,11 @@ import { useEthereum } from "./context/ETHContext"
 const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
 
 const App = () => {
-  const { provider, signer, account } = useEthereum()
+  const { provider, signer, account, error, connectWallet, disconnectWallet } = useEthereum()
   const [ethBalance, setEthBalance] = useState(0)
   const [wethBalance, setWethBalance] = useState(0)
   const [amount, setAmount] = useState("")
-  const [error, setError] = useState(null)
+  const [callError, setCallError] = useState(null)
 
   const fetchBalances = useCallback(async () => {
     if (provider && account) {
@@ -27,6 +27,8 @@ const App = () => {
     fetchBalances()
   }, [fetchBalances])
 
+  console.log(connectWallet);
+
   const wrapEth = async () => {
     try {
       if (!signer) {
@@ -40,7 +42,7 @@ const App = () => {
       await fetchBalances()
     } catch (error) {
       console.error("Error wrapping ETH:", error)
-      setError("Failed to wrap ETH. Please check your balance and try again.")
+      setCallError("Failed to wrap ETH. Please check your balance and try again.")
     }
   }
 
@@ -59,12 +61,12 @@ const App = () => {
       await fetchBalances()
     } catch (error) {
       console.error("Error unwrapping WETH:", error)
-      setError("Failed to unwrap WETH. Please check your balance and try again.")
+      setCallError("Failed to unwrap WETH. Please check your balance and try again.")
     }
   }
 
   return (
-    <div className='container'>
+    <div className="container">
       <h1>Wrap and Unwrap ETH</h1>
       {account ? (
         <>
@@ -81,14 +83,23 @@ const App = () => {
               placeholder="Amount"
             />
             <div className="btn-group">
-            <button className="wrap-btn" onClick={wrapEth}>Wrap</button>
-            <button className="unwrap-btn" onClick={unwrapWeth}>Unwrap</button>
-            {error ? <div className="error">Caught an error, please retry later</div> : null}
+              <button className="wrap-btn" onClick={wrapEth}>
+                Wrap
+              </button>
+              <button className="unwrap-btn" onClick={unwrapWeth}>
+                Unwrap
+              </button>
+              <button onClick={disconnectWallet}>Disconnect</button>
+              {callError ? <div className="error">Caught an error, please retry later</div> : null}
             </div>
           </div>
         </>
       ) : (
-        <p className='login-text'>Please connect your wallet to sepolia network</p>
+        <div className="login-box">
+          <p className="login-text">Please connect your wallet</p>
+          <button onClick={connectWallet}>Connect MetaMask</button>
+          {error && <p className="error">{error}</p>}
+        </div>
       )}
     </div>
   )
