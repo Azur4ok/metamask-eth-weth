@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-22.o4
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20]
